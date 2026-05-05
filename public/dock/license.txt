@@ -1,0 +1,11 @@
+Model Information:
+* title:	Low Poly Dock
+* source:	https://sketchfab.com/3d-models/low-poly-dock-1691586c531f4ff59cbfc96356a5ffbd
+* author:	tomk6505 (https://sketchfab.com/tomk6505)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Low Poly Dock" (https://sketchfab.com/3d-models/low-poly-dock-1691586c531f4ff59cbfc96356a5ffbd) by tomk6505 (https://sketchfab.com/tomk6505) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

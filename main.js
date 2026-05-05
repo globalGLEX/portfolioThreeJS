@@ -12,13 +12,27 @@ camera.position.set( 0.43, 1.66, 6.8 );
 const renderer = new THREE.WebGLRenderer();
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setClearColor(0x160b00);
+//scene.fog = new THREE.FogExp2(0x160b00, 0.03); // match fog color to background
+//renderer.setPixelRatio(0.5);
 document.body.appendChild( renderer.domElement );
-
 
 const controls = new OrbitControls( camera, renderer.domElement );
 controls.target.set(0, 0, 0);
 controls.update();
 
+/* // large flat plane just beyond water that matches fog color
+const mistGeometry = new THREE.PlaneGeometry(100, 100);
+const mistMaterial = new THREE.MeshBasicMaterial({ 
+  color: 0xc9d8e0,
+  transparent: true,
+  opacity: 0.6,
+});
+const mist = new THREE.Mesh(mistGeometry, mistMaterial);
+//mist.rotation.x = -Math.PI / 2;
+mist.position.y = 0.01; // just above water
+mist.position.z = -25; // just above water
+scene.add(mist); */
 /* const planeSize = 40;
      
 const loader = new THREE.TextureLoader();
@@ -84,13 +98,23 @@ const diffuse = textureLoader.load('tallgrass/textures/M_FoliageAtlas2_diffuse.p
 diffuse.colorSpace = THREE.SRGBColorSpace;
 diffuse.flipY = false;
 
+
+loader.load('dock/scene.gltf', (gltf) => {
+  // dock setup
+  const dock = gltf.scene;
+  dock.position.set(-5, 1, 5);
+  scene.add(gltf.scene);
+});
 let tallgrass;
 loader.load(
   'tallgrass/scene.gltf', (gltf) => {
+    let geometry, material;
     tallgrass = gltf.scene; //save reference
-    gltf.scene.scale.set(3, 3, 3);
+    gltf.scene.scale.set(6,6,6);
     gltf.scene.traverse((child) => {
         if (child.isMesh) {
+          geometry = child.geometry;
+          material = child.material;
             child.material.map = diffuse;
             child.material.color.set(0xffffff);
             child.material.needsUpdate = true; 
@@ -100,15 +124,63 @@ loader.load(
         }
       });
     
+       // define positions and rotations
+       const instances = [
+        { position: [0, 0, 0],  rotationY: 0 },
+        { position: [1, 0, 0],  rotationY: 95 },
+        { position: [15, 0, 2], rotationY: 0 },
+        { position: [16, 0, 2], rotationY: 30 },
+        { position: [17, 0, 2], rotationY: 70 },
+        { position: [18, 0, 2], rotationY: 90 },
+      ];
+      const instancedMesh = new THREE.InstancedMesh(geometry, material, instances.length);
+
+      const matrix = new THREE.Matrix4();
+      const position = new THREE.Vector3();
+      const rotation = new THREE.Euler();
+      const quaternion = new THREE.Quaternion();
+      const scale = new THREE.Vector3(0.1, 0.1, 0.1);
+
+      instances.forEach((inst, i) => {
+        position.set(...inst.position);
+        rotation.set(0, inst.rotationY, 0);
+        quaternion.setFromEuler(rotation);
+        matrix.compose(position, quaternion, scale);
+        instancedMesh.setMatrixAt(i, matrix);
+      });
+
+      
+  instancedMesh.instanceMatrix.needsUpdate = true;
+  scene.add(instancedMesh);
+
     scene.add(gltf.scene);
 
     const model1 = gltf.scene.clone();
-    model1.position.set(1, 0, 0);
+    model1.position.set(1, -0.5, 0);
     model1.rotateY(95);
     scene.add(model1);
     const model2 = gltf.scene.clone();
     model2.position.set(2, 0, 0);
     scene.add(model2);
+    const model3 = gltf.scene.clone();
+    model3.position.set(3, 0, 0);
+    model3.rotateY(165);
+    scene.add(model3);
+    const model4 = gltf.scene.clone();
+    model4.position.set(4, 0, 0);
+    model4.rotateY(45);
+    scene.add(model4);
+    const model5 = gltf.scene.clone();
+    model5.position.set(5, 0, 0);
+    model5.rotateY(200);
+    scene.add(model5);
+    const model6 = gltf.scene.clone();
+    model6.position.set(5, 0, -5);
+    model6.rotateY(100);
+    scene.add(model6);
+
+
+    
 
   },
   (progress) => {
@@ -117,7 +189,30 @@ loader.load(
   (error) => {
     console.error('error loading model:', error);
   }
+  
 );
+
+const skyGeometry = new THREE.SphereGeometry(100, 16, 16);
+const skyMaterial = new THREE.MeshBasicMaterial({
+  color: 0x16000d,
+  side: THREE.BackSide, // render inside of sphere
+  depthWrite: false,
+});
+const sky = new THREE.Mesh(skyGeometry, skyMaterial);
+scene.add(sky);
+/* const geometry2 = new THREE.BufferGeometry(); // your model geometry
+const material2 = new THREE.MeshStandardMaterial();
+const count2 = 100;
+
+const instancedMesh = new THREE.InstancedMesh(geometry2, material2, count2);
+
+const matrix = new THREE.Matrix4();
+for (let i = 0; i < count; i++) {
+  matrix.setPosition(x, y, z); // set each instance position
+  instancedMesh.setMatrixAt(i, matrix);
+}
+
+scene.add(instancedMesh); */
 
 
 /* const waterGeometry = new THREE.PlaneGeometry(100, 100, 50, 50);
@@ -137,7 +232,7 @@ water.material = new THREE.MeshStandardMaterial({
   
 water.rotation.x = -Math.PI / 2;
 scene.add(water); */
-const waterGeometry = new THREE.PlaneGeometry(100, 100);
+const waterGeometry = new THREE.PlaneGeometry(50, 50);
 
 const water = new Water(waterGeometry, {
   textureWidth: 512,
@@ -148,7 +243,7 @@ const water = new Water(waterGeometry, {
   sunDirection: new THREE.Vector3(),
   sunColor: 0xffffff,
   waterColor: 0xa64d79,
-  distortionScale: 0.3,
+  distortionScale: 0.8,
 });
 
 water.rotation.x = -Math.PI / 2;
@@ -174,14 +269,14 @@ scene.add(water);
   } */
 
   const color = 0xFFFFFF;
-  const intensity = 20;
+  const intensity = 80;
   const light = new THREE.PointLight(color, intensity);
   light.position.set(1.4, 2.75, 0.5);
   
   scene.add(light);
   
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-  directionalLight.intensity = 1.5; 
+  directionalLight.intensity = 5.5; 
   directionalLight.position.set(50, 20, 50);
   scene.add(directionalLight);
 
@@ -234,7 +329,7 @@ sun.set(0, 10, 0).normalize();
 water.material.uniforms['sunDirection'].value.copy(sun);
 water.material.uniforms['waterColor'].value.set(0x6c5a40);
 water.material.uniforms['distortionScale'].value = 0.2;
-water.material.uniforms['sunColor'].value.set(0x111111);
+water.material.uniforms['sunColor'].value.set(0xf1c232);
 water.material.uniforms['alpha'].value = 1; //reflection strength
 console.log(Object.keys(water.material.uniforms));
 function animate() { //used to have (time)
