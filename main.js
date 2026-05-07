@@ -8,7 +8,7 @@ import { TextureLoader } from 'three';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-camera.position.set( 0.43, 1.66, 6.8 );
+camera.position.set( 0.43, 2.66, 19);
 const renderer = new THREE.WebGLRenderer();
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -102,7 +102,7 @@ diffuse.flipY = false;
 loader.load('dock/scene.gltf', (gltf) => {
   // dock setup
   const dock = gltf.scene;
-  dock.position.set(-5, 1, 5);
+  dock.position.set(-6, -2, 20);
   scene.add(gltf.scene);
 });
 let tallgrass;
@@ -111,6 +111,7 @@ loader.load(
     let geometry, material;
     tallgrass = gltf.scene; //save reference
     gltf.scene.scale.set(6,6,6);
+    gltf.scene.position.set(-13, -1, 6);
     gltf.scene.traverse((child) => {
         if (child.isMesh) {
           geometry = child.geometry;
@@ -126,12 +127,43 @@ loader.load(
     
        // define positions and rotations
        const instances = [
-        { position: [0, 0, 0],  rotationY: 0 },
-        { position: [1, 0, 0],  rotationY: 95 },
+        { position: [-13, -2, 2], rotationY: 0 },
+        { position: [-14, 0, 2], rotationY: 145 },
+        { position: [-13, -2, -2], rotationY: 120 },
+        { position: [-15, -2, 2], rotationY: 0 },
+        { position: [-17, -2, 2], rotationY: 30 },
+        { position: [-19, -2, 2], rotationY: 70 },
+        { position: [-21, -2, 2], rotationY: 120 },
+        { position: [-23, -2, 2], rotationY: 30 },
+        { position: [-25, -2, 2], rotationY: 70 },
+        { position: [-27, -2, 2], rotationY: 100 },
+        { position: [-29, -2, 2], rotationY: 0 },
+        { position: [-31, -2, 2], rotationY: 30 },
+        { position: [-31, -2, -2], rotationY: 0 },
+        { position: [-31, -2, -2], rotationY: 30 },
+        { position: [-31, -4, 2], rotationY: 0 },
+        { position: [-29, -8, 2], rotationY: 0 },
+        { position: [13, 2, 0],  rotationY: 0 },
+        { position: [-10, 0, 0],  rotationY: 95 },
+        { position: [13, 0, 2], rotationY: 150 },
+        { position: [14, 0, 2], rotationY: 45 },
+        { position: [13, 0, -2], rotationY: 90 },
         { position: [15, 0, 2], rotationY: 0 },
-        { position: [16, 0, 2], rotationY: 30 },
-        { position: [17, 0, 2], rotationY: 70 },
-        { position: [18, 0, 2], rotationY: 90 },
+        { position: [17, 0, 2], rotationY: 30 },
+        { position: [19, 0, 2], rotationY: 70 },
+        { position: [21, 0, 2], rotationY: 120 },
+        { position: [23, 0, 2], rotationY: 30 },
+        { position: [25, 0, 2], rotationY: 70 },
+        { position: [27, 0, 2], rotationY: 90 },
+        { position: [27, 0, -2], rotationY: 0 },
+        { position: [29, 0, -2], rotationY: 120 },
+        { position: [29, 0, 2], rotationY: 130 },
+        { position: [31, 0, -4], rotationY: 120 },
+        { position: [33, 0, 2], rotationY: 0 },
+        { position: [35, 0, -4], rotationY: 120 },
+        { position: [31, 0, -3], rotationY: 0 },
+        { position: [29, 0, 1], rotationY: 120 },
+        { position: [29, 0, 2], rotationY: 0 },
       ];
       const instancedMesh = new THREE.InstancedMesh(geometry, material, instances.length);
 
@@ -153,9 +185,9 @@ loader.load(
   instancedMesh.instanceMatrix.needsUpdate = true;
   scene.add(instancedMesh);
 
-    scene.add(gltf.scene);
+  scene.add(gltf.scene);
 
-    const model1 = gltf.scene.clone();
+    /* const model1 = gltf.scene.clone();
     model1.position.set(1, -0.5, 0);
     model1.rotateY(95);
     scene.add(model1);
@@ -177,7 +209,7 @@ loader.load(
     const model6 = gltf.scene.clone();
     model6.position.set(5, 0, -5);
     model6.rotateY(100);
-    scene.add(model6);
+    scene.add(model6); */
 
 
     
@@ -232,7 +264,7 @@ water.material = new THREE.MeshStandardMaterial({
   
 water.rotation.x = -Math.PI / 2;
 scene.add(water); */
-const waterGeometry = new THREE.PlaneGeometry(50, 50);
+const waterGeometry = new THREE.PlaneGeometry(100, 100);
 
 const water = new Water(waterGeometry, {
   textureWidth: 512,
@@ -277,7 +309,7 @@ scene.add(water);
   
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
   directionalLight.intensity = 5.5; 
-  directionalLight.position.set(50, 20, 50);
+  directionalLight.position.set(0, 10, 20);
   scene.add(directionalLight);
 
   const helper = new THREE.PointLightHelper(light);
@@ -320,7 +352,7 @@ gui.add(light.target.position, 'y', 0, 10); */
 makeXYZGUI(gui, light.position, 'position', updateLight);
 /* makeXYZGUI(gui, light.target.position, 'target', updateLight); */
 
-camera.position.z = 12;
+//camera.position.z = 22;
 
 const timer = new THREE.Timer();
 
