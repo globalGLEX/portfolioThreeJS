@@ -13,7 +13,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
-//scene.fog = new THREE.FogExp2(0x160b00, 0.03); // match fog color to background
+//scene.fog = new THREE.FogExp2(0x111111, 0.003); // match fog color to background
 //renderer.setPixelRatio(0.5);
 document.body.appendChild( renderer.domElement );
 
@@ -100,10 +100,59 @@ diffuse.flipY = false;
 
 
 loader.load('dock/scene.gltf', (gltf) => {
-  // dock setup
+
   const dock = gltf.scene;
   dock.position.set(-6, -2, 20);
+  //dock.rotateY(180);
   scene.add(gltf.scene);
+});
+
+const width = 9;
+const height = 16;
+const geometry = new THREE.PlaneGeometry(9, 16, 20, 20);
+/* const positions = geometry.attributes.position;
+for (let i = 0; i < positions.count; i++) {
+  const x = positions.getX(i);
+  const y = positions.getY(i);
+  positions.setZ(i, 
+    Math.sin(x * 0.5) * 0.3 +   // wave along x axis
+    Math.sin(y * 0.9) * 0.3      // wave along y axis
+  );
+}
+positions.needsUpdate = true;
+geometry.computeVertexNormals(); */
+
+const material = new THREE.MeshPhysicalMaterial({
+  color: 0x00aa00,      // green, swap for 0xcc0000 for red
+  metalness: 0.9,
+  roughness: 0.1,
+  reflectivity: 1.0,
+  clearcoat: 1.0,       // adds that extra glossy top layer
+  clearcoatRoughness: 0.1,
+  sheen: 0.5,           // gives it a slight fabric/foil sheen
+  sheenColor: 0x00ff00, // sheen highlight color
+});
+const plane = new THREE.Mesh(geometry, material);
+plane.position.set(0, 4, -4);
+plane.rotateZ(1.57)
+scene.add(plane);
+
+loader.load('plants/scene.gltf', (gltf) => {
+  
+  const plant = gltf.scene;
+  plant.position.set(18, 0, 5);
+  plant.scale.set(0.02,0.02,0.02);
+  plant.rotateY(140);
+  scene.add(gltf.scene);
+
+  gltf.scene.traverse((child) => {
+    if (child.isMesh && child.material.map) {
+      child.material.map.minFilter = THREE.NearestFilter;
+      child.material.map.magFilter = THREE.NearestFilter;
+      child.material.color.multiplyScalar(0.1); // 0-1, lower = darker
+      child.material.map.needsUpdate = true;
+    }
+  });
 });
 let tallgrass;
 loader.load(
@@ -273,7 +322,7 @@ const water = new Water(waterGeometry, {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   }),
   sunDirection: new THREE.Vector3(),
-  sunColor: 0xffffff,
+  sunColor: 0xbf9000,
   waterColor: 0xa64d79,
   distortionScale: 0.8,
 });
@@ -359,9 +408,9 @@ const timer = new THREE.Timer();
 const sun = new THREE.Vector3();
 sun.set(0, 10, 0).normalize();
 water.material.uniforms['sunDirection'].value.copy(sun);
-water.material.uniforms['waterColor'].value.set(0x6c5a40);
+water.material.uniforms['waterColor'].value.set(0x111111);
 water.material.uniforms['distortionScale'].value = 0.2;
-water.material.uniforms['sunColor'].value.set(0xf1c232);
+water.material.uniforms['sunColor'].value.set(0x111111);
 water.material.uniforms['alpha'].value = 1; //reflection strength
 console.log(Object.keys(water.material.uniforms));
 function animate() { //used to have (time)
