@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-
+import { gsap } from 'gsap';
 import { Water } from 'three/examples/jsm/objects/Water.js';
 import { TextureLoader } from 'three';
 
@@ -13,7 +13,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
-//scene.fog = new THREE.FogExp2(0x111111, 0.003); // match fog color to background
+scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
 //renderer.setPixelRatio(0.5);
 document.body.appendChild( renderer.domElement );
 
@@ -105,6 +105,7 @@ loader.load('dock/scene.gltf', (gltf) => {
   dock.position.set(-6, -2, 20);
   //dock.rotateY(180);
   scene.add(gltf.scene);
+  onModelLoaded();
 });
 
 const width = 9;
@@ -123,19 +124,44 @@ positions.needsUpdate = true;
 geometry.computeVertexNormals(); */
 
 const material = new THREE.MeshPhysicalMaterial({
-  color: 0x00aa00,      // green, swap for 0xcc0000 for red
+  color: 0x00aa00,      // green
   metalness: 0.9,
   roughness: 0.1,
   reflectivity: 1.0,
-  clearcoat: 1.0,       // adds that extra glossy top layer
+  clearcoat: 1.0,       // adds extra glossy top layer
   clearcoatRoughness: 0.1,
   sheen: 0.5,           // gives it a slight fabric/foil sheen
   sheenColor: 0x00ff00, // sheen highlight color
 });
+let modelsLoaded = 0;
+const totalModels = 3; 
+
+function onModelLoaded() {
+  modelsLoaded++;
+  if (modelsLoaded === totalModels) {
+    startPlaneAnimation();
+  }
+}
+
 const plane = new THREE.Mesh(geometry, material);
-plane.position.set(0, 4, -4);
+function startPlaneAnimation() {
+// set starting position
+plane.position.set(0, -20, -4);
+plane.visible = true;
+
+
+// animate to final position
+gsap.to(plane.position, {
+  y: 4,
+  duration: 2.5,
+  ease: 'expo.out', // easing in from fast to slow
+  delay: 2,         // optional delay before starting
+});
+}
+plane.visible = false;
 plane.rotateZ(1.57)
 scene.add(plane);
+
 
 loader.load('plants/scene.gltf', (gltf) => {
   
@@ -144,6 +170,7 @@ loader.load('plants/scene.gltf', (gltf) => {
   plant.scale.set(0.02,0.02,0.02);
   plant.rotateY(140);
   scene.add(gltf.scene);
+  onModelLoaded();
 
   gltf.scene.traverse((child) => {
     if (child.isMesh && child.material.map) {
@@ -213,6 +240,18 @@ loader.load(
         { position: [31, 0, -3], rotationY: 0 },
         { position: [29, 0, 1], rotationY: 120 },
         { position: [29, 0, 2], rotationY: 0 },
+        { position: [15, 0, -19], rotationY: 0 },
+        { position: [16, 0, -19], rotationY: 120 },
+        { position: [18, 0, -18], rotationY: 90 },
+        { position: [20, 0, -19], rotationY: 45 },
+        { position: [22, 0, -19], rotationY: 0 },
+        { position: [24, 0, -18], rotationY: 90 },
+        { position: [26, 0, -19], rotationY: 0 },
+        { position: [28, 0, -19], rotationY: 120 },
+        { position: [30, 0, -18], rotationY: 90 },
+        
+        { position: [4, -3, 18], rotationY: 0 },
+        { position: [5, -3, 18], rotationY: 100 },
       ];
       const instancedMesh = new THREE.InstancedMesh(geometry, material, instances.length);
 
@@ -235,6 +274,7 @@ loader.load(
   scene.add(instancedMesh);
 
   scene.add(gltf.scene);
+  onModelLoaded();//for waiting before plane animation
 
     /* const model1 = gltf.scene.clone();
     model1.position.set(1, -0.5, 0);
@@ -356,8 +396,15 @@ scene.add(water);
   
   scene.add(light);
   
-  const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-  directionalLight.intensity = 5.5; 
+/*   const spotLight = new THREE.SpotLight(0xffffff, 100);
+spotLight.position.set(10, 5, 0);
+spotLight.angle = Math.PI / 8; // beam width
+spotLight.penumbra = 0.3;       // soft edges
+scene.add(spotLight);
+ */
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 9.5);
+  directionalLight.intensity = 9.5; 
   directionalLight.position.set(0, 10, 20);
   scene.add(directionalLight);
 
@@ -366,8 +413,8 @@ scene.add(water);
 
   function makeXYZGUI(gui, vector3, name, onChangeFn) {
     const folder = gui.addFolder(name);
-    folder.add(vector3, 'x', -10, 10).onChange(onChangeFn);
-    folder.add(vector3, 'y', 0, 10).onChange(onChangeFn);
+    folder.add(vector3, 'x', -20, 20).onChange(onChangeFn);
+    folder.add(vector3, 'y', -10, 20).onChange(onChangeFn);
     folder.add(vector3, 'z', -10, 10).onChange(onChangeFn);
     folder.open();
   }
