@@ -5,16 +5,19 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { gsap } from 'gsap';
 import { Water } from 'three/examples/jsm/objects/Water.js';
 import { TextureLoader } from 'three';
+import './main.css';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.set( 0.43, 2.66, 19);
+const originalCameraPos = camera.position.clone();
+
 const renderer = new THREE.WebGLRenderer();
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-//renderer.setPixelRatio(0.5);
+renderer.setPixelRatio(1);
 document.body.appendChild( renderer.domElement );
 
 const controls = new OrbitControls( camera, renderer.domElement );
@@ -108,8 +111,8 @@ loader.load('dock/scene.gltf', (gltf) => {
   onModelLoaded();
 });
 
-const width = 9;
-const height = 16;
+const width = 11;
+const height = 18;
 const geometry = new THREE.PlaneGeometry(9, 16, 20, 20);
 /* const positions = geometry.attributes.position;
 for (let i = 0; i < positions.count; i++) {
@@ -160,8 +163,50 @@ gsap.to(plane.position, {
 }
 plane.visible = false;
 plane.rotateZ(1.57)
+plane.rotateY(0.12);
+plane.rotateX(0.02);
 scene.add(plane);
 
+const hitbox = document.getElementById('model-hitbox');
+let isZoomedIn = false;
+
+hitbox.addEventListener('click', (e) => {
+  e.stopPropagation(); 
+  if (!isZoomedIn) {
+    isZoomedIn = true;
+    
+    hitbox.style.display = 'none'; // hide on zoom in
+    gsap.to(camera.position, {
+      x: 0, y: 5, z: 2,
+      duration: 1.0,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        document.getElementById('overlay').style.display = 'block';
+        // or add a class that triggers a css animation
+        document.getElementById('overlay').classList.add('visible');
+        document.getElementById('overlay').addEventListener('click', (e) => {
+          e.stopPropagation(); // prevents click from reaching document listener
+        });
+      }
+    });
+  }
+});
+document.addEventListener('click', (e) => {
+  if (!hitbox.contains(e.target) && isZoomedIn) {
+    isZoomedIn = false;
+    document.getElementById('overlay').classList.remove('visible'); // hide immediately
+    gsap.to(camera.position, {
+      x: originalCameraPos.x,
+      y: originalCameraPos.y,
+      z: originalCameraPos.z,
+      duration: 1.0,
+      ease: 'power2.inOut',
+      onComplete: () => {
+        hitbox.style.display = 'block'; // show again after zoom out finishes
+      }
+    });
+  }
+});
 
 loader.load('plants/scene.gltf', (gltf) => {
   
@@ -203,24 +248,25 @@ loader.load(
     
        // define positions and rotations
        const instances = [
+        { position: [-7, -4, 2], rotationY: 20 },
         { position: [-13, -2, 2], rotationY: 0 },
         { position: [-14, 0, 2], rotationY: 145 },
         { position: [-13, -2, -2], rotationY: 120 },
         { position: [-15, -2, 2], rotationY: 0 },
         { position: [-17, -2, 2], rotationY: 30 },
-        { position: [-19, -2, 2], rotationY: 70 },
+        { position: [-19, -2, 2], rotationY: 60 },
         { position: [-21, -2, 2], rotationY: 120 },
-        { position: [-23, -2, 2], rotationY: 30 },
+        { position: [-23, -2, 2], rotationY: 40 },
         { position: [-25, -2, 2], rotationY: 70 },
         { position: [-27, -2, 2], rotationY: 100 },
         { position: [-29, -2, 2], rotationY: 0 },
-        { position: [-31, -2, 2], rotationY: 30 },
+        { position: [-31, -2, 2], rotationY: 10 },
         { position: [-31, -2, -2], rotationY: 0 },
-        { position: [-31, -2, -2], rotationY: 30 },
+        { position: [-31, -2, -2], rotationY: 20 },
         { position: [-31, -4, 2], rotationY: 0 },
         { position: [-29, -8, 2], rotationY: 0 },
         { position: [13, 2, 0],  rotationY: 0 },
-        { position: [-10, 0, 0],  rotationY: 95 },
+        { position: [-10, 0, 0],  rotationY: 16 },
         { position: [13, 0, 2], rotationY: 150 },
         { position: [14, 0, 2], rotationY: 45 },
         { position: [13, 0, -2], rotationY: 90 },

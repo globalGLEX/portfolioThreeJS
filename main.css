@@ -1,0 +1,27 @@
+#model-hitbox {
+    position: fixed;
+    width: 420px;
+    height: 230px;
+    top: 36%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    opacity: 0;
+    background: red;  /* uncomment to debug position */
+    z-index: 11;
+  }
+#overlay {
+    width: 81%;
+    height: 87%;
+    background-color: #fff;
+    display: none;
+    position: fixed;
+    top: 5%;
+    left: 10%;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+#overlay.visible {
+    opacity: 1;
+  }
