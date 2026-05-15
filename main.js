@@ -7,6 +7,8 @@ import { Water } from 'three/examples/jsm/objects/Water.js';
 import { TextureLoader } from 'three';
 import './main.css';
 
+
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.set( 0.43, 2.66, 19);
@@ -17,12 +19,14 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(1);
+renderer.setPixelRatio(0.3);
 document.body.appendChild( renderer.domElement );
 
-const controls = new OrbitControls( camera, renderer.domElement );
+
+/* const controls = new OrbitControls( camera, renderer.domElement );
 controls.target.set(0, 0, 0);
 controls.update();
+ */
 
 /* // large flat plane just beyond water that matches fog color
 const mistGeometry = new THREE.PlaneGeometry(100, 100);
@@ -163,12 +167,16 @@ gsap.to(plane.position, {
 }
 plane.visible = false;
 plane.rotateZ(1.57)
-plane.rotateY(0.12);
-plane.rotateX(0.02);
+plane.rotateY(0);
+plane.rotateX(0);
 scene.add(plane);
 
 const hitbox = document.getElementById('model-hitbox');
 let isZoomedIn = false;
+
+document.getElementById('overlay').addEventListener('click', (e) => {
+  e.stopPropagation();
+});
 
 hitbox.addEventListener('click', (e) => {
   e.stopPropagation(); 
@@ -177,16 +185,13 @@ hitbox.addEventListener('click', (e) => {
     
     hitbox.style.display = 'none'; // hide on zoom in
     gsap.to(camera.position, {
-      x: 0, y: 5, z: 2,
+      x: 0, y: 4, z: 2,
       duration: 1.0,
       ease: 'power2.inOut',
       onComplete: () => {
         document.getElementById('overlay').style.display = 'block';
-        // or add a class that triggers a css animation
         document.getElementById('overlay').classList.add('visible');
-        document.getElementById('overlay').addEventListener('click', (e) => {
-          e.stopPropagation(); // prevents click from reaching document listener
-        });
+       
       }
     });
   }
