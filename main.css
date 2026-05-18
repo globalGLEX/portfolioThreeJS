@@ -10,6 +10,62 @@
     background: red;  /* uncomment to debug position */
     z-index: 11;
   }
+#moon-container {
+    transition: opacity 0.5s ease;
+    
+}
+.moonR, .moonG, .moonB {
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    height: 339px;
+    width: 452px;
+    scale: 0.6;
+    mix-blend-mode: screen;
+   /*  background-blend-mode: screen;
+    background: url(mooncropR.png), url(mooncropG.png), url(mooncropB.png); */
+}
+.moonR{
+    
+    animation: shift 3s 1.5s infinite;
+    
+    
+}
+.moonG{
+    animation: shift2 3s 2s infinite;
+}
+.moonB{
+    animation: shift 3s infinite;
+}
+@keyframes shift {
+    0% {    
+        left: -50px;   
+    }
+    
+   90% {     
+        left: -50px;  
+    } 
+    100% {
+        left: -55px;  
+    }
+}
+@keyframes shift2 {
+    0% {    
+        left: -50px;   
+    }
+    40% {     
+        left: -50px;  
+    }
+    50% {     
+        left: -45px;  
+    } 
+   60% {     
+    left: -50px;  
+    } 
+    100% {
+        left: -50px;  
+    }
+}
 #overlay {
     width: 80%;
     height: 87%;

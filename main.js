@@ -19,7 +19,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(0.3);
+renderer.setPixelRatio(1);
 document.body.appendChild( renderer.domElement );
 
 
@@ -146,6 +146,7 @@ const totalModels = 3;
 function onModelLoaded() {
   modelsLoaded++;
   if (modelsLoaded === totalModels) {
+    document.getElementById('moon-container').style.display = 'block';
     startPlaneAnimation();
   }
 }
@@ -184,6 +185,7 @@ hitbox.addEventListener('click', (e) => {
     isZoomedIn = true;
     
     hitbox.style.display = 'none'; // hide on zoom in
+    document.getElementById('moon-container').style.opacity = '0';
     gsap.to(camera.position, {
       x: 0, y: 4, z: 2,
       duration: 1.0,
@@ -207,6 +209,7 @@ document.addEventListener('click', (e) => {
       duration: 1.0,
       ease: 'power2.inOut',
       onComplete: () => {
+        document.getElementById('moon-container').style.opacity = '1';
         hitbox.style.display = 'block'; // show again after zoom out finishes
       }
     });
