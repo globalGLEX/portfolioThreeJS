@@ -6,9 +6,30 @@
     left: 49%;
     transform: translate(-50%, -50%);
     cursor: pointer;
-    opacity: 0.1;
+    opacity: 0;
     background: red;  /* uncomment to debug position */
     z-index: 11;
+  }
+input[type="range"] {
+    width: 200px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 20;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}  
+#sound-btn {
+    position: fixed;
+    bottom: 23px;
+    right: 230px;
+    z-index: 20;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
   }
 #moon-container {
     transition: opacity 0.5s ease;
@@ -69,7 +90,7 @@
 #overlay {
     width: 80%;
     height: 87%;
-    background-color: #00aa00;
+    background-color: orange;
     display: none;
     position: fixed;
     top: 5%;

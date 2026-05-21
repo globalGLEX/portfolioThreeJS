@@ -8,6 +8,8 @@
     </style>
   </head>
   <body>
+    <input type="range" id="volume" style="display: none;" min="0" max="1" step="0.01" value="0.5">
+    <button id="sound-btn" style="display: none;">🔇</button>
     <script type="module" src="/main.js"></script>
     <div id="model-hitbox"></div>
     <div id="moon-container" style="display: none;">
@@ -24,7 +26,7 @@
         <div class="sites">
            <!--  <div id="test">dsdsd</div> -->
             <div class="card">
-                <img src="public/sparks3.png" alt="Sparks in THREE.js">
+                <img src="/sparks3.png" alt="Sparks in THREE.js">
                 <div class="txtWrapper">
                 <h2>Sparks</h2>
                 <p>JS sparks using THREE.js</p>
