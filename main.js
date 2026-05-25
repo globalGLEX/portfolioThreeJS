@@ -161,26 +161,57 @@ loader.load('plants/scene.gltf', (gltf) => {
     }
   });
 });
-let tallgrass;
+let tallgrass, originalPositions;
+let maxY = -Infinity;//for animation
+let threshold = 0; // only move top 20%
 loader.load(
   'tallgrass/scene.gltf', (gltf) => {
     let geometry, material;
+   
+
     tallgrass = gltf.scene; //save reference
     gltf.scene.scale.set(6,6,6);
     gltf.scene.position.set(-13, -1, 6);
     gltf.scene.traverse((child) => {
+        if (child.isMesh && child.geometry) {
+          const positions = child.geometry.attributes.position;
+          for (let i = 0; i < positions.count; i++) {
+            maxY = Math.max(maxY, positions.getY(i));
+          }
+
+          geometry = child.geometry;
+          material = child.material;
+            child.material.map = diffuse;
+            child.material.color.set(0xffffff);
+            child.material.needsUpdate = true; 
+            //for animating grass
+            originalPositions = positions.array.slice();
+            
+        
+         
+        }
+      });
+      threshold = maxY * 0.6; //0.6 should animate top 40% of model
+   /*    
+   without animation:
+   
+   gltf.scene.traverse((child) => {
         if (child.isMesh) {
           geometry = child.geometry;
           material = child.material;
             child.material.map = diffuse;
             child.material.color.set(0xffffff);
             child.material.needsUpdate = true; 
+            //for animating grass
+            originalPositions = child.geometry.attributes.position.array.slice();
             
         
          
         }
-      });
-    
+      }); */
+
+
+
        // define positions and rotations
        const instances = [
         { position: [-7, -4, 2], rotationY: 20 },
@@ -295,9 +326,9 @@ scene.add(water);
 
 
 const color = 0xFFFFFF;
-const intensity = 80;
+const intensity = 200;
 const light = new THREE.PointLight(color, intensity);
-light.position.set(1.4, 2.75, 0.5);
+light.position.set(12.64, 7.47, 5.34);
   
 scene.add(light);
   
@@ -351,8 +382,8 @@ directionalLight.intensity = 9.5;
 directionalLight.position.set(0, 10, 20);
 scene.add(directionalLight);
 
-const helper = new THREE.PointLightHelper(light);
-scene.add(helper);
+/* const helper = new THREE.PointLightHelper(light);
+scene.add(helper); */
 
 function makeXYZGUI(gui, vector3, name, onChangeFn) {
     const folder = gui.addFolder(name);
@@ -400,6 +431,7 @@ water.material.uniforms['distortionScale'].value = 0.2;
 water.material.uniforms['sunColor'].value.set(0x111111);
 water.material.uniforms['alpha'].value = 1; //reflection strength
 console.log(Object.keys(water.material.uniforms));
+
 function animate() { //used to have (time)
     
     timer.update();
@@ -424,7 +456,28 @@ function animate() { //used to have (time)
       
     water.material.uniforms['time'].value += 0.002; //water speed
     
-    
+
+    //for animating grass
+    if (tallgrass && originalPositions) {
+      tallgrass.traverse((child) => {
+        if (child.isMesh && child.geometry) { 
+        const positions = child.geometry.attributes.position;
+        for (let i = 0; i < positions.count; i++) {
+          const oy = originalPositions[i * 3 + 1];
+          if (oy > threshold) {
+            const ox = originalPositions[i * 3];
+            const oz = originalPositions[i * 3 + 2];
+            const influence = (oy - threshold) / (maxY - threshold); // 0 at threshold, 1 at top
+            positions.setX(i, ox + Math.sin(oy * 2 + time) * 0.45 * influence);
+            positions.setZ(i, oz + Math.cos(oy * 2 + time) * 0.45 * influence);
+          }
+        }
+        positions.needsUpdate = true;
+        child.geometry.computeVertexNormals();
+      }//if stmt
+      });
+    }
+ 
     renderer.render( scene, camera );
   }
   renderer.setAnimationLoop( animate );
