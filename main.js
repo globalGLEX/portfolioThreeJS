@@ -17,7 +17,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(1);
+renderer.setPixelRatio(0.2);
 document.body.appendChild( renderer.domElement );
 
 
@@ -56,14 +56,14 @@ positions.needsUpdate = true;
 geometry.computeVertexNormals(); */
 
 const material = new THREE.MeshPhysicalMaterial({
-  color: 0xF59527,      // main color
+  color: 0xC266FF,      // main color, F5D56C natural muted, 47A871 calm green
   metalness: 0.9,
-  roughness: 0.1,
+  roughness: 0.15,
   reflectivity: 1.0,
   clearcoat: 1.0,       // adds extra glossy top layer
   clearcoatRoughness: 0.1,
-  sheen: 0.5,           // gives it a slight fabric/foil sheen
-  sheenColor: 0xF59527, // sheen highlight color
+  sheen: 0.8,           // gives it a slight fabric/foil sheen
+  sheenColor: 0x69B905, 
 });
 let modelsLoaded = 0;
 const totalModels = 3; 
@@ -89,7 +89,7 @@ plane.visible = true;
 gsap.to(plane.position, {
   y: 4,
   duration: 2.5,
-  ease: 'back.out', // easing in from fast to slow
+  ease: 'expo.out', // easing in from fast to slow
   delay: 2,         // optional delay before starting
 });
 }
