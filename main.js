@@ -5,6 +5,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { gsap } from 'gsap';
 import { Water } from 'three/examples/jsm/objects/Water.js';
 import { TextureLoader } from 'three';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import './main.css';
 
 const scene = new THREE.Scene();
@@ -99,6 +101,22 @@ plane.rotateY(0);
 plane.rotateX(0);
 scene.add(plane);
 
+let textMesh;
+const fontLoader = new FontLoader();
+fontLoader.load('https://threejs.org/examples/fonts/gentilis_regular.typeface.json', (font) => {
+  const textGeometry = new TextGeometry('Projects', {
+    font: font,
+    size: 2,
+    depth: 0.2,
+  });
+
+  const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  textMesh = new THREE.Mesh(textGeometry, textMaterial);
+  textMesh.rotateZ(-1.57);
+  textMesh.position.set(-1, 5, 0.1);
+  plane.add(textMesh); 
+});
+
 const hitbox = document.getElementById('model-hitbox');
 let isZoomedIn = false;
 
@@ -120,6 +138,7 @@ hitbox.addEventListener('click', (e) => {
       onComplete: () => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('overlay').classList.add('visible');
+        if (textMesh) textMesh.visible = false;
        
       }
     });
@@ -138,6 +157,7 @@ document.addEventListener('click', (e) => {
       onComplete: () => {
         document.getElementById('moon-container').style.opacity = '1';
         hitbox.style.display = 'block'; // show again after zoom out finishes
+        if (textMesh) textMesh.visible = true;
       }
     });
   }
