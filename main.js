@@ -19,7 +19,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(0.2);
+renderer.setPixelRatio(1);
 document.body.appendChild( renderer.domElement );
 
 
@@ -103,18 +103,28 @@ scene.add(plane);
 
 let textMesh;
 const fontLoader = new FontLoader();
-fontLoader.load('https://threejs.org/examples/fonts/gentilis_regular.typeface.json', (font) => {
-  const textGeometry = new TextGeometry('Projects', {
+fontLoader.load('public/Blacksword_Regular.json', (font) => {
+  const materials = [
+    new THREE.MeshStandardMaterial({ color: 0xffffff }), // front face
+    new THREE.MeshStandardMaterial({ color: 0xC266FF })
+  ];
+  
+  const geometry = new TextGeometry('Projects', {
     font: font,
-    size: 2,
-    depth: 0.2,
+    size: 3,
+    depth: 0,      // extrusion depth
+    bevelEnabled: false,
+   
   });
 
-  const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  textMesh = new THREE.Mesh(textGeometry, textMaterial);
+  textMesh = new THREE.Mesh(geometry, materials); // pass array
+  
   textMesh.rotateZ(-1.57);
-  textMesh.position.set(-1, 5, 0.1);
-  plane.add(textMesh); 
+  textMesh.position.set(-1, 7.5, 0.1);
+
+  plane.add(textMesh);
+  
+  
 });
 
 const hitbox = document.getElementById('model-hitbox');
@@ -139,6 +149,7 @@ hitbox.addEventListener('click', (e) => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('overlay').classList.add('visible');
         if (textMesh) textMesh.visible = false;
+        console.log(textMesh.visible);
        
       }
     });
