@@ -58,7 +58,7 @@ positions.needsUpdate = true;
 geometry.computeVertexNormals(); */
 
 const material = new THREE.MeshPhysicalMaterial({
-  color: 0xC266FF,      // main color, F5D56C natural muted, 47A871 calm green
+  color: 0xC266FF,     
   metalness: 0.9,
   roughness: 0.15,
   reflectivity: 1.0,
@@ -105,20 +105,21 @@ let textMesh;
 const fontLoader = new FontLoader();
 fontLoader.load('public/Blacksword_Regular.json', (font) => {
   const materials = [
-    new THREE.MeshStandardMaterial({ color: 0xffffff }), // front face
+    new THREE.MeshStandardMaterial({ color: 0xB7F76E }), // front face
     new THREE.MeshStandardMaterial({ color: 0xC266FF })
   ];
   
   const geometry = new TextGeometry('Projects', {
     font: font,
-    size: 3,
+    size: 30,
     depth: 0,      // extrusion depth
     bevelEnabled: false,
    
   });
+ 
 
   textMesh = new THREE.Mesh(geometry, materials); // pass array
-  
+  textMesh.scale.set(0.1, 0.1, 0.1);
   textMesh.rotateZ(-1.57);
   textMesh.position.set(-1, 7.5, 0.1);
 
@@ -341,8 +342,8 @@ scene.add(sky);
 const waterGeometry = new THREE.PlaneGeometry(100, 100);
 
 const water = new Water(waterGeometry, {
-  textureWidth: 512,
-  textureHeight: 512,
+  textureWidth: 1024,
+  textureHeight: 1024,
   waterNormals: new TextureLoader().load('waternormals.jpg', (texture) => {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   }),
@@ -410,7 +411,7 @@ document.getElementById('volume').addEventListener('input', (e) => {
 
 const directionalLight = new THREE.DirectionalLight(0xffffff, 9.5);
 directionalLight.intensity = 9.5; 
-directionalLight.position.set(0, 10, 20);
+directionalLight.position.set(0, 10, 15);
 scene.add(directionalLight);
 
 /* const helper = new THREE.PointLightHelper(light);
