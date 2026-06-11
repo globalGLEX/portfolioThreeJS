@@ -27,6 +27,15 @@ document.body.appendChild( renderer.domElement );
 controls.target.set(0, 0, 0);
 controls.update();
  */
+const dialog = document.getElementById('attr-dialog');
+
+document.getElementById('attr-btn').addEventListener('click', () => {
+  dialog.showModal();
+});
+
+document.getElementById('close-dialog').addEventListener('click', () => {
+  dialog.close();
+});
 
 const loader = new GLTFLoader();
 const textureLoader = new THREE.TextureLoader();
@@ -435,41 +444,7 @@ scene.add(directionalLight);
 /* const helper = new THREE.PointLightHelper(light);
 scene.add(helper); */
 
-function makeXYZGUI(gui, vector3, name, onChangeFn) {
-    const folder = gui.addFolder(name);
-    folder.add(vector3, 'x', -20, 20).onChange(onChangeFn);
-    folder.add(vector3, 'y', -10, 20).onChange(onChangeFn);
-    folder.add(vector3, 'z', -10, 10).onChange(onChangeFn);
-    folder.open();
-}
-  
-class ColorGUIHelper {
-      constructor(object, prop) {
-        this.object = object;
-        this.prop = prop;
-      }
-      get value() {
-        return '#' + this.object[this.prop].getHexString();
-      }
-      set value(hexString) {
-        this.object[this.prop].set(hexString);
-      }
-}
 
-function updateLight() {
-    
-    helper.update();
-}
-
-const gui = new GUI();
-gui.addColor(new ColorGUIHelper(light, 'color'), 'value').name('color');
-gui.add(light, 'intensity', 0, 250, 1);
-gui.add(light, 'distance', 0, 40).onChange(updateLight);
-/* gui.add(light.target.position, 'x', -10, 10);
-gui.add(light.target.position, 'z', -10, 10);
-gui.add(light.target.position, 'y', 0, 10); */
-
-makeXYZGUI(gui, light.position, 'position', updateLight);
 
 const timer = new THREE.Timer();
 
