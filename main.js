@@ -19,7 +19,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(0.2);
+renderer.setPixelRatio(1);
 document.body.appendChild( renderer.domElement );
 
 
@@ -47,6 +47,11 @@ loader.load('dock/scene.gltf', (gltf) => {
 
   const dock = gltf.scene;
   dock.position.set(-6, -2, 20);
+  dock.traverse((child) => {
+    if (child.isMesh) {
+      child.material.color.multiplyScalar(0.2); // to make it darker
+    }
+  });
   scene.add(gltf.scene);
   onModelLoaded();
 });
@@ -303,8 +308,7 @@ loader.load(
         { position: [24, 0, -18], rotationY: 90 },
         { position: [26, 0, -19], rotationY: 0 },
         { position: [28, 0, -19], rotationY: 120 },
-        { position: [30, 0, -18], rotationY: 90 },
-        
+        { position: [30, 0, -18], rotationY: 90 }, 
         { position: [4, -3, 18], rotationY: 0 },
         { position: [5, -3, 18], rotationY: 100 },
       ];
@@ -371,7 +375,7 @@ scene.add(water);
 const color = 0xFFFFFF;
 const intensity = 200;
 const light = new THREE.PointLight(color, intensity);
-light.position.set(12.64, 7.47, 5.34);
+light.position.set(12.64, 5.47, 5.34);
   
 scene.add(light);
   
