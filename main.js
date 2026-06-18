@@ -19,7 +19,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(1);
+renderer.setPixelRatio(0.3);
 document.body.appendChild( renderer.domElement );
 
 
@@ -150,6 +150,16 @@ let isZoomedIn = false;
 document.getElementById('overlay').addEventListener('click', (e) => {
   e.stopPropagation();
 });
+document.addEventListener('keydown', (e) => {
+  if (e.key === ' ' && isZoomedIn) {
+    e.preventDefault(); // prevent page scroll
+    const overlay = document.getElementById('overlay');
+    overlay.scrollTop += 200; // scroll amount in px
+  }
+  if (e.key === 'Escape' && isZoomedIn) {
+    zoomOut();
+  }
+});
 
 hitbox.addEventListener('click', (e) => {
   e.stopPropagation(); 
@@ -166,15 +176,27 @@ hitbox.addEventListener('click', (e) => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('overlay').classList.add('visible');
         if (textMesh) textMesh.visible = false;
-        console.log(textMesh.visible);
+        
+        
        
       }
     });
   }
 });
-document.addEventListener('click', (e) => {
-  if (!hitbox.contains(e.target) && isZoomedIn) {
-    isZoomedIn = false;
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    hitbox.click(); // triggers the click event on hitbox
+  }
+});
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      card.click(); // or whatever action the card should do
+    }
+  });
+});
+function zoomOut(){
+  isZoomedIn = false;
     document.getElementById('overlay').classList.remove('visible'); // hide immediately
     gsap.to(camera.position, {
       x: originalCameraPos.x,
@@ -188,6 +210,11 @@ document.addEventListener('click', (e) => {
         if (textMesh) textMesh.visible = true;
       }
     });
+}
+document.addEventListener('click', (e) => {
+  if (!hitbox.contains(e.target) && isZoomedIn) {
+    zoomOut();
+    
   }
 });
 
