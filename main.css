@@ -248,10 +248,11 @@ input[type="range"]::-webkit-slider-thumb {
     width: 250px;
     z-index: 100;
     
+    
 
 }
 #attr-btn {
-    
+     
     background: #111;
     color: #fff;
     border-radius: 3px;
@@ -260,9 +261,19 @@ input[type="range"]::-webkit-slider-thumb {
 }
 #attr-dialog {
     
+    
+    height: 360px;
     background: #111;
     color: #fff;
     border-radius: 5px;
-    
     border-width: 1px;
+}
+#close-dialog {
+
+    font-size: 16px;
+    width: 70px;
+    height: 30px;
+    margin: 10px;
+    margin-top: 50px;
+    float: right;
 }
