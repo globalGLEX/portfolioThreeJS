@@ -121,14 +121,14 @@ input[type="range"]::-webkit-slider-thumb {
     }
 }
 #overlay {
-    width: 80%;
-    height: 87%;
+    width: 84%;
+    height: 92%;
     background: linear-gradient(to bottom, transparent, #C266FF 25%);
    
     display: none;
     position: fixed;
-    top: 5%;
-    left: 10%;
+    top: 1%;
+    left: 8%;
     z-index: 10;
     opacity: 0;
     transition: opacity 0.5s ease;
@@ -139,7 +139,8 @@ input[type="range"]::-webkit-slider-thumb {
 @media screen and (max-width: 800px){
     #overlay {
         width: 95%;
-        left: 3%;
+        height: 92%;
+        left: 2%;
        
     }
 }
@@ -152,6 +153,7 @@ input[type="range"]::-webkit-slider-thumb {
     
     width: 90%;
     margin-left: 5%;
+    margin-top: 50px;
 
 }
   #content {
@@ -224,7 +226,7 @@ input[type="range"]::-webkit-slider-thumb {
        
    }
    .card:hover{
-       scale: 1.05;
+       scale: 1.02;
        cursor: pointer;
       
        
