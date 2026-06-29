@@ -20,7 +20,7 @@ canvas {
     transform: translate(-50%, -50%);
     cursor: pointer;
     opacity: 0;
-    background: red;  /* uncomment to debug position */
+    background: red; 
     z-index: 11;
   }
 input[type="range"] {
@@ -81,12 +81,12 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .moonR{
     
-    animation: shift 3s 1.5s infinite;
+    animation: shift 3s 1s infinite;
     
     
 }
 .moonG{
-    animation: shift2 3s 2s infinite;
+    animation: shift2 3s 1s infinite;
 }
 .moonB{
     animation: shift 3s infinite;
@@ -113,8 +113,8 @@ input[type="range"]::-webkit-slider-thumb {
     50% {     
         left: -45px;  
     } 
-   60% {     
-    left: -50px;  
+    55% {     
+        left: -45px;  
     } 
     100% {
         left: -50px;  
@@ -123,7 +123,7 @@ input[type="range"]::-webkit-slider-thumb {
 #overlay {
     width: 84%;
     height: 92%;
-    background: linear-gradient(to bottom, transparent, #C266FF 25%);
+    background: linear-gradient(to bottom, transparent, #ECD4FF 25%);
    
     display: none;
     position: fixed;
@@ -236,7 +236,7 @@ input[type="range"]::-webkit-slider-thumb {
        margin-left: 1em;
        padding: 1em;
        background-color: #ffffff;
-       width: 80%;
+       width: 100%;
        margin-right: 0px;
        border-bottom-right-radius: 1em;
        
