@@ -1,4 +1,6 @@
 Personal site to show my other projects.
+Wanted to use ThreeJS to create an atmospheric river scene and 
+explore ways to animate models,  planes and cameras.
 
 Attributions tor 3d models:
 
