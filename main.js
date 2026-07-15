@@ -19,20 +19,14 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(0.2);
+renderer.setPixelRatio(1); //1 - maximum model resolution. 
 document.body.appendChild( renderer.domElement );
 
-
-/* const controls = new OrbitControls( camera, renderer.domElement );
-controls.target.set(0, 0, 0);
-controls.update();
- */
+//dialog for model creator attributions
 const dialog = document.getElementById('attr-dialog');
-
 document.getElementById('attr-btn').addEventListener('click', () => {
   dialog.showModal();
 });
-
 document.getElementById('close-dialog').addEventListener('click', () => {
   dialog.close();
 });
@@ -41,7 +35,7 @@ const loader = new GLTFLoader();
 const textureLoader = new THREE.TextureLoader();
 const diffuse = textureLoader.load('tallgrass/textures/M_FoliageAtlas2_diffuse.png');
 diffuse.colorSpace = THREE.SRGBColorSpace;
-diffuse.flipY = false;
+diffuse.flipY = false; //WebGL's texture coordinate system has Y starting from the bottom, GLTF already accounts for this so no need to flip
 
 loader.load('dock/scene.gltf', (gltf) => {
 
@@ -49,13 +43,14 @@ loader.load('dock/scene.gltf', (gltf) => {
   dock.position.set(-6, -2, 20);
   dock.traverse((child) => {
     if (child.isMesh) {
-      child.material.color.multiplyScalar(0.2); // to make it darker
+      child.material.color.multiplyScalar(0.2); // to make the dock darker
     }
   });
   scene.add(gltf.scene);
   onModelLoaded();
 });
 
+//the "Projects" screen
 const width = 11;
 const height = 18;
 const geometry = new THREE.PlaneGeometry(9, 16, 20, 20);
@@ -81,9 +76,10 @@ const material = new THREE.MeshPhysicalMaterial({
   sheen: 0.8,           // gives it a slight fabric/foil sheen
   sheenColor: 0x69B905, 
 });
+
 let modelsLoaded = 0;
 const totalModels = 3; 
-
+//wait until models are loaded before displaying other elements
 function onModelLoaded() {
   modelsLoaded++;
   if (modelsLoaded === totalModels) {
@@ -95,6 +91,7 @@ function onModelLoaded() {
     startPlaneAnimation();
   }
 }
+
 
 const plane = new THREE.Mesh(geometry, material);
 function startPlaneAnimation() {
@@ -117,6 +114,7 @@ plane.rotateY(0);
 plane.rotateX(0);
 scene.add(plane);
 
+//"Projects" text
 let textMesh;
 const fontLoader = new FontLoader();
 fontLoader.load('public/Blacksword_Regular.json', (font) => {
@@ -138,21 +136,22 @@ fontLoader.load('public/Blacksword_Regular.json', (font) => {
   textMesh.scale.set(0.1, 0.1, 0.1);
   textMesh.rotateZ(-1.57);
   textMesh.position.set(-1, 7.5, 0.1);
-
   plane.add(textMesh);
   
   
 });
 
+//the clickable area for triggering zoom animation
 const hitbox = document.getElementById('model-hitbox');
 let isZoomedIn = false;
 
 document.getElementById('overlay').addEventListener('click', (e) => {
   e.stopPropagation();
 });
+//keyboard contols
 document.addEventListener('keydown', (e) => {
   if (e.key === ' ' && isZoomedIn) {
-    e.preventDefault(); // prevent page scroll
+    e.preventDefault(); // prevent the rest of the page scrolling
     const overlay = document.getElementById('overlay');
     overlay.scrollTop += 200; // scroll amount in px
   }
@@ -167,11 +166,12 @@ hitbox.addEventListener('click', (e) => {
     isZoomedIn = true;
     
     hitbox.style.display = 'none'; // hide on zoom in
-    document.getElementById('moon-container').style.opacity = '0';
+    document.getElementById('moon-container').style.opacity = '0'; //hide moon when zoomed in
     gsap.to(camera.position, {
       x: 0, y: 4, z: 2,
       duration: 1.0,
       ease: 'power2.inOut',
+      //show content after zoom is finished
       onComplete: () => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('overlay').classList.add('visible');
@@ -183,6 +183,7 @@ hitbox.addEventListener('click', (e) => {
     });
   }
 });
+//more keyboard controls
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     hitbox.click(); // triggers the click event on hitbox
@@ -191,13 +192,13 @@ document.addEventListener('keydown', (e) => {
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      card.click(); // or whatever action the card should do
+      card.click(); // clicks on card
     }
   });
 });
 function zoomOut(){
   isZoomedIn = false;
-    document.getElementById('overlay').classList.remove('visible'); // hide immediately
+    document.getElementById('overlay').classList.remove('visible'); // hide the content
     gsap.to(camera.position, {
       x: originalCameraPos.x,
       y: originalCameraPos.y,
@@ -205,12 +206,14 @@ function zoomOut(){
       duration: 1.0,
       ease: 'power2.inOut',
       onComplete: () => {
+        // show moon, hitbox, text again after zoom out finishes
         document.getElementById('moon-container').style.opacity = '1';
         hitbox.style.display = 'block'; // show again after zoom out finishes
         if (textMesh) textMesh.visible = true;
       }
     });
 }
+//clicking outside the content area triggers zoom out
 document.addEventListener('click', (e) => {
   if (!hitbox.contains(e.target) && isZoomedIn) {
     zoomOut();
@@ -218,6 +221,7 @@ document.addEventListener('click', (e) => {
   }
 });
 
+//the smaller plants on the right
 loader.load('plants/scene.gltf', (gltf) => {
   
   const plant = gltf.scene;
@@ -236,14 +240,15 @@ loader.load('plants/scene.gltf', (gltf) => {
     }
   });
 });
+
+//animating the tallgrass models
 let tallgrass, originalPositions;
 let maxY = -Infinity;//for animation
-let threshold = 0; // only move top 20%
+let threshold = 0; 
 loader.load(
   'tallgrass/scene.gltf', (gltf) => {
     let geometry, material;
    
-
     tallgrass = gltf.scene; //save reference
     gltf.scene.scale.set(6,6,6);
     gltf.scene.position.set(-13, -1, 6);
@@ -253,20 +258,18 @@ loader.load(
           for (let i = 0; i < positions.count; i++) {
             maxY = Math.max(maxY, positions.getY(i));
           }
-
           geometry = child.geometry;
           material = child.material;
             child.material.map = diffuse;
             child.material.color.set(0xffffff);
             child.material.needsUpdate = true; 
-            //for animating grass
             originalPositions = positions.array.slice();
-            
-        
-         
+             
         }
       });
-      threshold = maxY * 0.6; //0.6 should animate top 40% of model
+      threshold = maxY * 0.6; //0.6 should animate the upper 40% of model
+
+      
    /*    
    without animation:
    
@@ -277,17 +280,14 @@ loader.load(
             child.material.map = diffuse;
             child.material.color.set(0xffffff);
             child.material.needsUpdate = true; 
-            //for animating grass
             originalPositions = child.geometry.attributes.position.array.slice();
             
-        
-         
         }
       }); */
 
 
 
-       // define positions and rotations
+       // define tallgrass instances' positions and rotations
        const instances = [
         { position: [-7, -4, 2], rotationY: 20 },
         { position: [-13, -2, 2], rotationY: 0 },
@@ -339,28 +339,30 @@ loader.load(
         { position: [4, -3, 18], rotationY: 0 },
         { position: [5, -3, 18], rotationY: 100 },
       ];
-      const instancedMesh = new THREE.InstancedMesh(geometry, material, instances.length);
 
+      //using InstancedMesh to display many instances of the same model
+      const instancedMesh = new THREE.InstancedMesh(geometry, material, instances.length);
       const matrix = new THREE.Matrix4();
       const position = new THREE.Vector3();
       const rotation = new THREE.Euler();
       const quaternion = new THREE.Quaternion();
       const scale = new THREE.Vector3(0.1, 0.1, 0.1);
-
+      //sets position, rotation and scale of each individual instance
       instances.forEach((inst, i) => {
         position.set(...inst.position);
         rotation.set(0, inst.rotationY, 0);
         quaternion.setFromEuler(rotation);
         matrix.compose(position, quaternion, scale);
-        instancedMesh.setMatrixAt(i, matrix);
+        instancedMesh.setMatrixAt(i, matrix); 
       });
 
+  
       
   instancedMesh.instanceMatrix.needsUpdate = true;
   scene.add(instancedMesh);
 
   scene.add(gltf.scene);
-  onModelLoaded();//for waiting before plane animation
+  onModelLoaded();
 
   },
   (progress) => {
@@ -488,10 +490,10 @@ water.material.uniforms['sunColor'].value.set(0x111111);
 water.material.uniforms['alpha'].value = 1; //reflection strength
 console.log(Object.keys(water.material.uniforms));
 
-function animate() { //used to have (time)
+//animating water and grass
+function animate() { 
     
     timer.update();
-
     water.visible = true;
     const time = timer.getElapsed();
     const positions = water.geometry.attributes.position;
@@ -503,8 +505,8 @@ function animate() { //used to have (time)
       positions.setZ(i, 
         Math.sin(x * 5 + time) * 0.01 +
         Math.sin(y * 5 + time) * 0.01 +
-        Math.sin(x * 2.7 + time * 0.4) * 0.05 +   // different frequency and speed
-        Math.sin(y * 3.3 + time * 1.9) * 0.05 +   // different frequency and speed
+        Math.sin(x * 2.7 + time * 0.4) * 0.05 +   
+        Math.sin(y * 3.3 + time * 1.9) * 0.05 +   
         Math.sin((x + y) * 4.1 + time * 1.6) * 0.03 // diagonal wave
       );    }
     positions.needsUpdate = true;
@@ -512,9 +514,8 @@ function animate() { //used to have (time)
       
     water.material.uniforms['time'].value += 0.002; //water speed
     
-
-    //for animating grass
-    if (tallgrass && originalPositions) {
+     
+     if (tallgrass && originalPositions) {
       tallgrass.traverse((child) => {
         if (child.isMesh && child.geometry) { 
         const positions = child.geometry.attributes.position;
@@ -530,9 +531,10 @@ function animate() { //used to have (time)
         }
         positions.needsUpdate = true;
         child.geometry.computeVertexNormals();
-      }//if stmt
+      }
       });
     }
+   
  
     renderer.render( scene, camera );
   }
