@@ -22,6 +22,13 @@ scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
 renderer.setPixelRatio(1); //1 - maximum model resolution. 
 document.body.appendChild( renderer.domElement );
 
+//adjusts scene size when window gets resized
+window.addEventListener('resize', () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
 //dialog for model creator attributions
 const dialog = document.getElementById('attr-dialog');
 document.getElementById('attr-btn').addEventListener('click', () => {
