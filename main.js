@@ -182,10 +182,11 @@ hitbox.addEventListener('click', (e) => {
       onComplete: () => {
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('overlay').classList.add('visible');
+        //scroll to the top every time the projects page is opened
+        overlay.scrollTop = 0;
         if (textMesh) textMesh.visible = false;
         
-        
-       
+
       }
     });
   }
@@ -199,7 +200,7 @@ document.addEventListener('keydown', (e) => {
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      card.click(); // clicks on card
+      card.click(); // clicks on card, but the sites need to be hosted before
     }
   });
 });
@@ -239,9 +240,10 @@ loader.load('plants/scene.gltf', (gltf) => {
   onModelLoaded();
 
   gltf.scene.traverse((child) => {
-    if (child.isMesh && child.material.map) {
-      child.material.map.minFilter = THREE.NearestFilter;
-      child.material.map.magFilter = THREE.NearestFilter;
+
+    if (child.isMesh && child.material.map) { // if (child.material.map) checks if the mesh has a color texture assigned
+      child.material.map.minFilter = THREE.NearestFilter; //minFilter - how the texture is sampled when it's smaller than the screen area
+      child.material.map.magFilter = THREE.NearestFilter; //when it's bigger. THREE.NearestFilter is pixelated, sharp, no blending
       child.material.color.multiplyScalar(0.1); // 0-1, lower = darker
       child.material.map.needsUpdate = true;
     }
