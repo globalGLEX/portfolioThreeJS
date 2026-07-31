@@ -19,7 +19,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setClearColor(0x160b00);
 scene.fog = new THREE.FogExp2(0x111111, 0.03); // match fog color to background
-renderer.setPixelRatio(1); //1 - maximum model resolution. 
+renderer.setPixelRatio(0.2); //1 - maximum model resolution. 
 document.body.appendChild( renderer.domElement );
 
 //adjusts scene size when window gets resized
